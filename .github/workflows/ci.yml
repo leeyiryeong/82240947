@@ -37,31 +37,38 @@ jobs:
       run: |
         echo "::set-output name=VERSION::$(date +%Y%m%d%H%M)"
 
-    # ACR 로그인
-    - name: 'ACR login'
+    # Base ACR 로그인
+    - name: 'Login to Base ACR'
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.BASEACR_LOGIN_SERVER }}
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
+        username: ${{ secrets.BASE_ACR_USERNAME }}
+        password: ${{ secrets.BASE_ACR_PASSWORD }}
 
     # Docker 이미지 빌드 및 태깅
-    - name: 'Build & Tag Image'
+    - name: 'Build & Tag Image for Base ACR'
       run: |
         docker build -t ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} -f Dockerfile .
-        docker tag ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
 
-    # 배포 ACR에 이미지 푸시
-    - name: 'Push image'
+    # Base ACR에 이미지 푸시
+    - name: 'Push image to Base ACR'
+      run: |
+        docker push ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
+
+    # CI/CD ACR 로그인
+    - name: 'Login to CI/CD ACR'
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.STAPACR_LOGIN_SERVER }}
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
-    
-    - run: |
+        username: ${{ secrets.CI_ACR_USERNAME }}  # 추가된 시크릿
+        password: ${{ secrets.CI_ACR_PASSWORD }}  # 추가된 시크릿
+
+    # CI/CD ACR에 이미지 태깅 및 푸시
+    - name: 'Tag & Push Image to CI/CD ACR'
+      run: |
+        docker tag ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
         docker push ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
-    
+
     # Kustomize를 사용하여 manifests에 이미지 태그 변경
     - name: Update Kubernetes resources
       run: |
@@ -77,4 +84,3 @@ jobs:
         git config --global user.name "github-actions"
         git commit -am "Update image tag"
         git push origin main
-
