@@ -73,8 +73,8 @@ jobs:
     - name: Commit files
       run: |
         cd manifests
-        git config --global user.email "github-actions@github.com"
-        git config --global user.name "github-actions"
+        git config --global user.email "yiryeong1631@naver.com"
+        git config --global user.name "yiryeong"
         git commit -am "Update image tag"
         git push origin main
 
