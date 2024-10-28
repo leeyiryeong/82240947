@@ -7,5 +7,5 @@ spec:
     - port: 8080
       targetPort: 8080
   selector:
-    app: 82240947
+    app: "82240947"
   type: ClusterIP
