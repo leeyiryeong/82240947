@@ -6,11 +6,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: 82240947
+      app: "82240947"
   template:
     metadata:
       labels:
-        app: 82240947
+        app: "82240947"
     spec:
       containers:
         - name: "82240947"
