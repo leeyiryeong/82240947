@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: 82240947-configmap
+data:
+  application.yml: |
+    spring:
+      datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://cepg-aa-std-db.postgres.database.azure.com:5432/postgres
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+        hikari:
+          maximum-pool-size: 2
+          minimum-idle: 2
+      jpa:
+        show-sql: true
+        hibernate:
+          ddl-auto: update
+        defer-datasource-initialization: true
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+            format_sql: true
+    server:
+      port: 8080
+
