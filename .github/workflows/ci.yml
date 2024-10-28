@@ -10,12 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Repository checkout
     - uses: actions/checkout@v4
       with:
         token: ${{ secrets.REPO_TOKEN }}
 
-    # JDK 설치
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -23,60 +21,48 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    # Spring Boot 애플리케이션 패키징
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    # Kustomize 설치
+
     - name: Setup Kustomize
       uses: imranismail/setup-kustomize@v1
 
-    # 버전 생성
+ 
     - name: 'Gen Version'
       id: gen-version
       run: |
         echo "::set-output name=VERSION::$(date +%Y%m%d%H%M)"
 
-    # Base ACR 로그인
-    - name: 'Login to Base ACR'
+
+    - name: 'ACR login'
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.BASEACR_LOGIN_SERVER }}
-        username: ${{ secrets.BASE_ACR_USERNAME }}
-        password: ${{ secrets.BASE_ACR_PASSWORD }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    # Docker 이미지 빌드 및 태깅
-    - name: 'Build & Tag Image for Base ACR'
+    - name: 'Build & Tag Image'
       run: |
         docker build -t ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} -f Dockerfile .
+        docker tag ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
 
-    # Base ACR에 이미지 푸시
-    - name: 'Push image to Base ACR'
-      run: |
-        docker push ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
-
-    # CI/CD ACR 로그인
-    - name: 'Login to CI/CD ACR'
+    - name: 'Push image'
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.STAPACR_LOGIN_SERVER }}
-        username: ${{ secrets.CI_ACR_USERNAME }}  # 추가된 시크릿
-        password: ${{ secrets.CI_ACR_PASSWORD }}  # 추가된 시크릿
-
-    # CI/CD ACR에 이미지 태깅 및 푸시
-    - name: 'Tag & Push Image to CI/CD ACR'
-      run: |
-        docker tag ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    - run: |
         docker push ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
-
-    # Kustomize를 사용하여 manifests에 이미지 태그 변경
+    
     - name: Update Kubernetes resources
       run: |
         cd manifests/overlays/prod
         kustomize edit set image ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
         cat kustomization.yaml
 
-    # 변경 사항 커밋 및 푸시
     - name: Commit files
       run: |
         cd manifests
