@@ -31,28 +31,19 @@ jobs:
       - name: 'ACR login'
         run: |
           echo ${{ secrets.REGISTRY_PASSWORD }} | docker login cepgbaseacr.azurecr.io --username ${{ secrets.REGISTRY_USERNAME }} --password-stdin
-
       # Docker 이미지 빌드 및 태깅
       - name: 'Build & Tag Image'
         run: |
           docker build -t cepgbaseacr.azurecr.io/${{ env.IMAGE_NAME }}:latest -f Dockerfile .
           docker tag cepgbaseacr.azurecr.io/${{ env.IMAGE_NAME }}:latest ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
-
       # STAPACR에 로그인
       - name: 'STAPACR login'
         run: |
           echo ${{ secrets.CI_ACR_PASSWORD }} | docker login ${{ secrets.STAPACR_LOGIN_SERVER }} --username ${{ secrets.CI_ACR_USERNAME }} --password-stdin
-
       # CI/CD ACR에 이미지 푸시
       - name: 'Push image'
         run: |
           docker push ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
-
-      # Azure ACR 연결 (Kubernetes에서 이미지 pull 전에 실행) - 오류 무시
-      - name: 'Attach using acr-name'
-        run: |
-          az aks update --name cepg-aa-std-aks-clstr --resource-group ce-aa-rg --attach-acr cepgstapacr || true
-
       # Kubernetes에 배포
       - name: Update Kubernetes resources
         run: |
@@ -60,14 +51,12 @@ jobs:
           cd manifests/overlays/prod
           kustomize edit set image ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
           cat kustomization.yaml
-
       # 변경 사항 커밋 및 푸시
       - name: Commit files
         run: |
           cd manifests
           echo "`ls`"
           git config --global user.email "yiryeong1631@naver.com"
-          git config --global user.name "leeyiryeong"
+          git config --global user.name "yiryeong"
           git commit -am "Update image tag"
           git push -u origin main
-
