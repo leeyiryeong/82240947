@@ -17,17 +17,6 @@ spec:
           image: ceappacr.azurecr.io/82240947
           ports:
             - containerPort: 8080
-          env:
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: app-db-secret
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: app-db-secret
-                  key: password
           volumeMounts:
             - name: config-volume
               mountPath: /app/overlays/prod
@@ -35,4 +24,3 @@ spec:
         - name: config-volume
           configMap:
             name: 82240947-configmap
-
