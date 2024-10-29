@@ -2,8 +2,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://ce-aa-psql.postgres.database.azure.com:5432/postgres
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: "ktds"
+    password: "Ktds!1234"
   jpa:
     show-sql: true
     hibernate:
