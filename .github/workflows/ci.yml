@@ -4,8 +4,8 @@ on: workflow_dispatch
 
 env:
   IMAGE_NAME: 82240947
-  RESOURCE_GROUP_NAME: cepg-aa-std-rg      # 실제 리소스 그룹 이름
-  AKS_CLUSTER_NAME: cepg-aa-std-aks-clstr   # 실제 AKS 클러스터 이름
+  RESOURCE_GROUP_NAME: cepg-aa-std-rg
+  AKS_CLUSTER_NAME: cepg-aa-std-aks-clstr
 
 jobs:
   build:
@@ -39,6 +39,11 @@ jobs:
       run: |
         echo "::set-output name=VERSION::$(date +%Y%m%d%H%M)"
 
+    # Azure CLI 로그인
+    - name: 'Login to Azure'
+      run: |
+        az login
+
     # Base ACR 로그인
     - name: 'ACR login'
       uses: azure/docker-login@v1
@@ -59,7 +64,7 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.STAPACR_LOGIN_SERVER }}  # ceappacr.azurecr.io
-        username: ${{ secrets.CI_ACR_USERNAME }}           # CI_ACR_USERNAME
+        username: ${{ secrets.CI_ACR_USERNAME }}           # CI_ACR_USERNAME (ACR 이름)
         password: ${{ secrets.CI_ACR_PASSWORD }}           # CI_ACR_PASSWORD
 
     - run: |
@@ -91,3 +96,4 @@ jobs:
         git config --global user.name "yiryeong"
         git commit -am "Update image tag"
         git push origin main
+
