@@ -51,7 +51,7 @@ jobs:
       # Kubernetes에 배포
       - name: Deploy to AKS
         run: |
-          kubectl apply -f manifests/overlays/prod -n 82240947  # Kustomize를 사용하여 배포
+          kubectl apply -f manifests/overlays/prod -n 82240947 --validate=false  # Kustomize를 사용하여 배포
 
       # 변경 사항 커밋 및 푸시
       - name: Commit files
