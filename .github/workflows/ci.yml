@@ -2,6 +2,10 @@ name: Azure CI/CD Workflow
 
 on: workflow_dispatch
 
+permissions:
+  id-token: write  # OIDC 토큰 쓰기 권한 추가
+  contents: read   # 리포지토리 콘텐츠 읽기 권한 추가
+
 env:
   IMAGE_NAME: 82240947
   RESOURCE_GROUP_NAME: cepg-aa-std-rg
