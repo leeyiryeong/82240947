@@ -48,16 +48,6 @@ jobs:
         run: |
           docker push ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
 
-      # Azure 로그인
-      - name: 'Azure login'
-        run: |
-          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-
-      # AKS 클러스터에 연결
-      - name: 'Connect to AKS'
-        run: |
-          az aks get-credentials --resource-group YOUR_RESOURCE_GROUP_NAME --name YOUR_AKS_CLUSTER_NAME --output none
-
       # Kubernetes에 배포
       - name: Update Kubernetes resources
         run: |
