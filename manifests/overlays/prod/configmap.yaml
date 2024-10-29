@@ -8,8 +8,8 @@ data:
       datasource:
         driver-class-name: org.postgresql.Driver
         url: jdbc:postgresql://cepg-aa-std-db.postgres.database.azure.com:5432/postgres
-        username: ktds                 # 하드코딩된 DB 사용자 이름
-        password: Ktds!1234            # 하드코딩된 DB 비밀번호
+        username: "ktds"                 # 하드코딩된 DB 사용자 이름
+        password: "Ktds!1234"            # 하드코딩된 DB 비밀번호
         hikari:
           maximum-pool-size: 2
           minimum-idle: 2
