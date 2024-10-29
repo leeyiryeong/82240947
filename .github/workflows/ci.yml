@@ -48,11 +48,11 @@ jobs:
         run: |
           docker push ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
 
-      # Kubernetes 인증 설정
-      - name: Set up kubeconfig
+
+      # Azure ACR 로그인 (Kubernetes에서 이미지 pull 전에 실행)
+      - name: 'Login to ACR'
         run: |
-          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
+           echo ${{ secrets.CI_ACR_PASSWORD }} | docker login ${{ secrets.STAPACR_LOGIN_SERVER }} --username ${{ secrets.CI_ACR_USERNAME }} --password-stdin
 
       # Kubernetes에 배포
       - name: Update Kubernetes resources
