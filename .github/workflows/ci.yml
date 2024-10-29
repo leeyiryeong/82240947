@@ -2,10 +2,6 @@ name: Azure CI/CD Workflow
 
 on: workflow_dispatch
 
-permissions:
-  id-token: write  # OIDC 토큰 쓰기 권한 추가
-  contents: read   # 리포지토리 콘텐츠 읽기 권한 추가
-
 env:
   IMAGE_NAME: 82240947
   RESOURCE_GROUP_NAME: cepg-aa-std-rg
@@ -33,29 +29,21 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      # Azure CLI 로그인
-      - name: 'Login to Azure'
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      # Base ACR 로그인
+      # ACR에 로그인
       - name: 'ACR login'
         run: |
-          az acr login --name ${{ secrets.REGISTRY_USERNAME }}  # ACR 이름으로 로그인
+          echo ${{ secrets.REGISTRY_PASSWORD }} | docker login cepgbaseacr.azurecr.io --username ${{ secrets.REGISTRY_USERNAME }} --password-stdin
 
       # Docker 이미지 빌드 및 태깅
       - name: 'Build & Tag Image'
         run: |
-          docker build -t ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest -f Dockerfile .
-          docker tag ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+          docker build -t cepgbaseacr.azurecr.io/${{ env.IMAGE_NAME }}:latest -f Dockerfile .
+          docker tag cepgbaseacr.azurecr.io/${{ env.IMAGE_NAME }}:latest ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
 
       # CI/CD ACR에 이미지 푸시
       - name: 'Push image'
         run: |
-          docker push ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+          docker push cepgbaseacr.azurecr.io/${{ env.IMAGE_NAME }}:latest
 
       # AKS 클러스터에 대한 자격 증명 가져오기
       - name: Get AKS credentials
@@ -66,4 +54,3 @@ jobs:
       - name: Deploy to AKS
         run: |
           kubectl apply -f manifests/overlays/prod  # Kustomize를 사용하여 배포
-
