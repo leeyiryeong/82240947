@@ -1,16 +1,22 @@
-configMapGenerator:
-- files:
-  - application.yml
-  name: 82240947-configmap
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namePrefix: prod-
+
 resources:
 - ../../base
 - pvc.yaml
+
+configMapGenerator:
+- name: 82240947-configmap
+  files:
+  - application.yml  # 이 파일이 포함될 것입니다.
+
 patchesStrategicMerge:
 - deployment.yaml
 - ingress.yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-namePrefix: prod-
+
 images:
 - name: ceappacr.azurecr.io/82240947
-  newTag: "202410290103"
+  newTag: "202410290000"
+
