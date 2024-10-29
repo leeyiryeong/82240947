@@ -8,9 +8,9 @@ resources:
 - pvc.yaml
 
 configMapGenerator:
-- name: 82240947-configmap
-  files:
-  - application.yml  # 이 파일이 포함될 것입니다.
+- files:
+  - application.yml
+  name: 82240947-configmap
 
 patchesStrategicMerge:
 - deployment.yaml
@@ -18,5 +18,4 @@ patchesStrategicMerge:
 
 images:
 - name: ceappacr.azurecr.io/82240947
-  newTag: "202410290000"
-
+  newTag: latest
