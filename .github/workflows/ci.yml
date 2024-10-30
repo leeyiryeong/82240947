@@ -35,7 +35,7 @@ jobs:
     - name: 'Login to Azure'
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}  # Azure 서비스 주체 자격 증명
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: 'Set Azure subscription'
       run: |
@@ -66,7 +66,6 @@ jobs:
     - name: 'Get AKS credentials'
       run: |
         az aks get-credentials --resource-group ce-aa-rg --name ce-aa-aks
-        # 결과값 출력 없이 무시
 
     - name: Update Kubernetes resources
       run: |
