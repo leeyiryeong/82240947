@@ -31,3 +31,22 @@ data:
     pvc:
       path: /mnt/cloud-sample
 
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: a82240947  # 애플리케이션 이름
+spec:
+  project: p82240947  # 프로젝트 이름
+  source:
+    path: manifests/overlays/prod  # Kustomize 오버레이 경로
+    repoURL: 'https://github.com/leeyiryeong/82240947.git'  # Git 리포지토리 URL
+    targetRevision: main  # 브랜치 이름 수정
+  destination:
+    namespace: default
+    server: 'https://kubernetes.default.svc'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
