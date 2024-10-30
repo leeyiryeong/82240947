@@ -8,25 +8,25 @@ spec:
     spec:
       containers:
         - name: "82240947"
-          command: ["java","-jar","/app.jar"]
-          args: ["--spring.config.location=file:/config/application.yml"]
+          command: ["java","-jar","/app.jar"]  # 애플리케이션 실행 명령
+          args: ["--spring.config.location=file:/config/application.yml"]  # 설정 파일 위치
           volumeMounts:
             - mountPath: /mnt/cloud-sample
               name: "82240947-volume"
               readOnly: false
-              subPath: cloud-sample
+              subPath: cloud-sample  # 하위 경로 마운트
             - mountPath: /config
               name: application-properties
-              readOnly: true
+              readOnly: true  # 읽기 전용 설정
       volumes:
         - name: "82240947-volume"
           persistentVolumeClaim:
-            claimName: cepg-aa-std-pvc
+            claimName: cepg-aa-std-pvc  # PVC 참조
         - name: application-properties
           configMap:
             name: "82240947-configmap"
             items:
               - key: application.yml
-                path: application.yml
-            defaultMode: 420
+                path: application.yml  # ConfigMap에서의 경로
+            defaultMode: 420  # 기본 모드 설정
 

@@ -19,10 +19,6 @@ data:
           hibernate:
             dialect: org.hibernate.dialect.PostgreSQLDialect
             format_sql: true
-      sql:
-        init:
-          mode: embedded
-
     server:
       port: 8080
 
