@@ -1,27 +1,19 @@
-apiVersion: apps/v1
+apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: "82240947"
+  name: "a82240947" 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: "82240947"
+      app: "a82240947"
   template:
     metadata:
       labels:
-        app: "82240947"
+        app: "a82240947" 
     spec:
       containers:
-        - name: "82240947"
-          image: ceappacr.azurecr.io/82240947:latest
+        - name: "a82240947" 
+          image: ceappacr.azurecr.io/82240947
           ports:
-            - containerPort: 8080
-          volumeMounts:
-            - name: config-volume
-              mountPath: /app/overlays/prod
-      volumes:
-        - name: config-volume
-          configMap:
-            name: 82240947-configmap
-
+          - containerPort: 8080
