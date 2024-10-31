@@ -18,4 +18,4 @@ patchesStrategicMerge:
 
 images:
 - name: ceappacr.azurecr.io/82240947
-  newTag: "202410301339"
+  newTag: "202410310528"
