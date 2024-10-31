@@ -5,7 +5,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: cepg-aa-std-rwmany  # 유효한 StorageClass 이름
+  storageClassName: ce-aa-rwmany  # 유효한 StorageClass 이름
   resources:
     requests:
       storage: 1Gi

@@ -13,10 +13,9 @@ spec:
         app: "a82240947"
     spec:
       imagePullSecrets:
-        - name: regsecret  # 추가된 부분
+        - name: regescret  # 추가된 부분
       containers:
         - name: "a82240947"
-          image: epgbaseacr.azurecr.io/82240947:latest
+          image: ceappacr.azurecr.io/82240947:latest
           ports:
           - containerPort: 8080
-
