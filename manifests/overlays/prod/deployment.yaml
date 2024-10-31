@@ -10,7 +10,7 @@ spec:
         app: "a82240947"  # 레이블 추가
     spec:
       imagePullSecrets:  # 이미지 풀 시크릿 추가
-        - name: regcred
+        - name: regescret
       containers:
         - name: "a82240947"
           command: ["java", "-jar", "/app.jar"]
