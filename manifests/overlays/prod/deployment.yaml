@@ -1,14 +1,19 @@
-apiVersion : apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "a82240947" 
+  name: "a82240947"
 spec:
   replicas: 1
   template:
+    metadata:
+      labels:  # 메타데이터 추가
+        app: "a82240947"  # 레이블 추가
     spec:
+      imagePullSecrets:  # 이미지 풀 시크릿 추가
+        - name: regescret
       containers:
-        - name: "a82240947" 
-          command: ["java","-jar","/app.jar"]
+        - name: "a82240947"
+          command: ["java", "-jar", "/app.jar"]
           args: ["--spring.config.location=file:/config/application.yml"]
           volumeMounts:
           - mountPath: /mnt/cloud-sample
@@ -18,7 +23,7 @@ spec:
           - mountPath: /config
             name: application-properties
             readOnly: true
-                          
+
       volumes:
       - name: "82240947-volume"
         persistentVolumeClaim:
@@ -30,3 +35,4 @@ spec:
             - key: application.yml
               path: application.yml
           defaultMode: 420
+

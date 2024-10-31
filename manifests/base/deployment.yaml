@@ -1,7 +1,7 @@
-apiVersion : apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "a82240947" 
+  name: "a82240947"
 spec:
   replicas: 1
   selector:
@@ -10,10 +10,12 @@ spec:
   template:
     metadata:
       labels:
-        app: "a82240947" 
+        app: "a82240947"
     spec:
+      imagePullSecrets:
+        - name: regescret  # 추가된 부분
       containers:
-        - name: "a82240947" 
-          image: ceappacr.azurecr.io/82240947
+        - name: "a82240947"
+          image: ceappacr.azurecr.io/82240947:latest
           ports:
           - containerPort: 8080
